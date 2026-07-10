@@ -1,4 +1,4 @@
-#### [DiGi\.GLTF\.Analytical](index.md 'index')
+#### [DiGi\.GLTF\.Analytical](DiGi.GLTF.Analytical.Overview.md 'DiGi\.GLTF\.Analytical\.Overview')
 
 ## DiGi\.GLTF\.Analytical Namespace
 ### Classes
