@@ -4,7 +4,9 @@ using DiGi.Analytical.Building.Interfaces;
 using DiGi.Analytical.Urban.Classes;
 using DiGi.Core;
 using DiGi.Core.Interfaces;
+using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
+using DiGi.GLTF.Analytical.Enums;
 using DiGi.GLTF.Classes;
 using System.Collections.Generic;
 
@@ -22,9 +24,68 @@ namespace DiGi.GLTF.Analytical
         /// </summary>
         /// <param name="buildingModel">The <see cref="BuildingModel"/> to be converted. This value can be null.</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
+        /// <param name="buildingDisplayMode">The <see cref="BuildingDisplayMode"/> that determines whether components become individual nodes or are merged into a single envelope node per building.</param>
         /// <returns>A list of <see cref="GLTFNode"/> instances for all convertible components, or null if the building model is null or has no components.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance, BuildingDisplayMode buildingDisplayMode = BuildingDisplayMode.Component)
         {
+            if (buildingModel is null)
+            {
+                return null;
+            }
+
+            if (buildingDisplayMode == BuildingDisplayMode.Envelope)
+            {
+                List<IComponent>? components_Envelope = buildingModel.GetComponents<IComponent>();
+                if (components_Envelope is null || components_Envelope.Count == 0)
+                {
+                    return null;
+                }
+
+                List<Triangle3D> triangle3Ds = [];
+                foreach (IComponent component in components_Envelope)
+                {
+                    List<GLTFNode>? gLTFNodes_Component = ToGLTF_GLTFNodes(component, tolerance);
+                    if (gLTFNodes_Component is null)
+                    {
+                        continue;
+                    }
+
+                    foreach (GLTFNode gLTFNode_Component in gLTFNodes_Component)
+                    {
+                        Mesh3D? mesh3D_Component = gLTFNode_Component.Mesh3D;
+                        if (mesh3D_Component is null)
+                        {
+                            continue;
+                        }
+
+                        List<Triangle3D>? triangle3Ds_Component = mesh3D_Component.GetTriangles();
+                        if (triangle3Ds_Component is not null)
+                        {
+                            triangle3Ds.AddRange(triangle3Ds_Component);
+                        }
+                    }
+                }
+
+                if (triangle3Ds.Count == 0)
+                {
+                    return null;
+                }
+
+                Mesh3D? mesh3D_Envelope = Geometry.Spatial.Create.Mesh3D(triangle3Ds, tolerance);
+                if (mesh3D_Envelope is null)
+                {
+                    return null;
+                }
+
+                GLTFNode? gLTFNode = Create.GLTFNode(mesh3D_Envelope, $"BuildingModel {buildingModel.UniqueId}", buildingModel.UniqueId, Query.Color(buildingModel), 1, buildingModel.ToSystem_String(), tolerance);
+                if (gLTFNode is null)
+                {
+                    return null;
+                }
+
+                return [gLTFNode];
+            }
+
             List<IComponent>? components = buildingModel?.GetComponents<IComponent>();
             if (components is null)
             {

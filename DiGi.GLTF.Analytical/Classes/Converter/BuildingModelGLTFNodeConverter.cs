@@ -1,11 +1,12 @@
 using DiGi.Analytical.Building.Classes;
+using DiGi.GLTF.Analytical.Enums;
 using DiGi.GLTF.Classes;
 using System.Collections.Generic;
 
 namespace DiGi.GLTF.Analytical.Classes
 {
     /// <summary>
-    /// Converts a <see cref="BuildingModel"/> into <see cref="GLTFNode"/> instances by converting all of its components (see <see cref="Convert.ToGLTF_GLTFNodes(BuildingModel?, double)"/>).
+    /// Converts a <see cref="BuildingModel"/> into <see cref="GLTFNode"/> instances by converting all of its components (see <see cref="Convert.ToGLTF_GLTFNodes(BuildingModel?, double, BuildingDisplayMode)"/>).
     /// <para>Registered automatically with the generic DiGi.GLTF engine by assembly scanning (see <see cref="Modify.Register()"/>).</para>
     /// </summary>
     public class BuildingModelGLTFNodeConverter : GLTFNodeConverter<BuildingModel>
