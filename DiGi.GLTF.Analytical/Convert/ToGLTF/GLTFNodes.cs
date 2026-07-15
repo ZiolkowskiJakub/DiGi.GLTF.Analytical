@@ -44,6 +44,12 @@ namespace DiGi.GLTF.Analytical
                 List<Triangle3D> triangle3Ds = [];
                 foreach (IComponent component in components_Envelope)
                 {
+                    List<ISpace>? spaces = buildingModel.GetSpaces(component);
+                    if(spaces is not null && spaces.Count > 1)
+                    {
+                        continue;
+                    }
+
                     List<GLTFNode>? gLTFNodes_Component = ToGLTF_GLTFNodes(component, tolerance);
                     if (gLTFNodes_Component is null)
                     {
