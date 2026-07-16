@@ -26,7 +26,7 @@ namespace DiGi.GLTF.Analytical
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
         /// <param name="buildingModelDetailLevel">The <see cref="BuildingModelDetailLevel"/> that determines whether components become individual nodes or are merged into a single envelope node per building.</param>
         /// <returns>A list of <see cref="GLTFNode"/> instances for all convertible components, or null if the building model is null or has no components.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance, BuildingModelDetailLevel buildingModelDetailLevel = BuildingModelDetailLevel.Component)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = Core.Constants.Tolerance.Distance, BuildingModelDetailLevel buildingModelDetailLevel = BuildingModelDetailLevel.Component)
         {
             if (buildingModel is null)
             {
@@ -117,7 +117,7 @@ namespace DiGi.GLTF.Analytical
         /// <param name="urbanModel">The <see cref="UrbanModel"/> to be converted. This value can be null.</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
         /// <returns>A list of <see cref="GLTFNode"/> instances for all contained building models, or null if the urban model is null or empty.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this UrbanModel? urbanModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this UrbanModel? urbanModel, double tolerance = Core.Constants.Tolerance.Distance)
         {
             List<BuildingModel>? buildingModels = urbanModel?.GetBuildingModels();
             if (buildingModels is null)
@@ -144,7 +144,7 @@ namespace DiGi.GLTF.Analytical
         /// <param name="component">The building component to be converted. This value can be null.</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
         /// <returns>A list with a single <see cref="GLTFNode"/> representing the component, or null if the component has no supported surface geometry.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this IComponent? component, double tolerance = DiGi.Core.Constants.Tolerance.Distance)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this IComponent? component, double tolerance = Core.Constants.Tolerance.Distance)
         {
             ISurface3D? surface3D = component?.Surface3D();
             if (component is null || surface3D is null)

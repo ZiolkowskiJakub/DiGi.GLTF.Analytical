@@ -12,29 +12,16 @@ namespace DiGi.GLTF.Analytical
         /// <returns>A <see cref="Core.Classes.Color"/> representing the default styling of the component, or null if no default styling is defined.</returns>
         public static Core.Classes.Color? Color(this ISerializableObject? serializableObject)
         {
-            switch (serializableObject)
+            return serializableObject switch
             {
-                case IWindow:
-                    return new Core.Classes.Color(byte.MaxValue, 135, 206, 235);
-
-                case IDoor:
-                    return new Core.Classes.Color(byte.MaxValue, 139, 90, 43);
-
-                case IRoof:
-                    return new Core.Classes.Color(byte.MaxValue, 178, 34, 34);
-
-                case IWall:
-                    return new Core.Classes.Color(byte.MaxValue, 235, 230, 220);
-
-                case IFloor:
-                    return new Core.Classes.Color(byte.MaxValue, 128, 128, 128);
-
-                case IShade:
-                    return new Core.Classes.Color(byte.MaxValue, 105, 105, 105);
-
-                default:
-                    return null;
-            }
+                IWindow => new Core.Classes.Color(byte.MaxValue, 135, 206, 235),
+                IDoor => new Core.Classes.Color(byte.MaxValue, 139, 90, 43),
+                IRoof => new Core.Classes.Color(byte.MaxValue, 178, 34, 34),
+                IWall => new Core.Classes.Color(byte.MaxValue, 235, 230, 220),
+                IFloor => new Core.Classes.Color(byte.MaxValue, 128, 128, 128),
+                IShade => new Core.Classes.Color(byte.MaxValue, 105, 105, 105),
+                _ => null,
+            };
         }
     }
 }

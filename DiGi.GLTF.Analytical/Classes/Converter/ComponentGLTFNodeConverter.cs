@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace DiGi.GLTF.Analytical.Classes
 {
     /// <summary>
-    /// Converts a standalone building <see cref="IComponent"/> (for example a wall or a roof) into <see cref="GLTFNode"/> instances using its surface representation (see <see cref="Convert.ToGLTF_GLTFNodes(IComponent?, double)"/>).
+    /// Converts a standalone building <see cref="IComponent"/> (for example a wall or a roof) into <see cref="GLTFNode"/> instances using its surface representation (see <see cref="Convert.ToGLTF_GLTFNodes(IComponent, double)"/>).
     /// <para>Implemented against <see cref="IGLTFNodeConverter"/> directly because <see cref="IComponent"/> is an interface matched by type test rather than a concrete serializable class. Registered automatically with the generic DiGi.GLTF engine by assembly scanning (see <see cref="Modify.Register()"/>).</para>
     /// </summary>
     public class ComponentGLTFNodeConverter : IGLTFNodeConverter

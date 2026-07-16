@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace DiGi.GLTF.Analytical.Classes
 {
     /// <summary>
-    /// Converts a <see cref="BuildingModel"/> into <see cref="GLTFNode"/> instances by converting all of its components (see <see cref="Convert.ToGLTF_GLTFNodes(BuildingModel?, double, BuildingModelDetailLevel)"/>).
+    /// Converts a <see cref="BuildingModel"/> into <see cref="GLTFNode"/> instances by converting all of its components (see <see cref="Convert.ToGLTF_GLTFNodes(BuildingModel, double, DiGi.Analytical.Building.Enums.BuildingModelDetailLevel)"/>).
     /// <para>Registered automatically with the generic DiGi.GLTF engine by assembly scanning (see <see cref="Modify.Register()"/>).</para>
     /// </summary>
     public class BuildingModelGLTFNodeConverter : GLTFNodeConverter<BuildingModel>
