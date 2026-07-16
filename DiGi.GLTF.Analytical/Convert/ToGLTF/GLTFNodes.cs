@@ -6,7 +6,7 @@ using DiGi.Core;
 using DiGi.Core.Interfaces;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
-using DiGi.GLTF.Analytical.Enums;
+using DiGi.Analytical.Building.Enums;
 using DiGi.GLTF.Classes;
 using System.Collections.Generic;
 
@@ -24,16 +24,16 @@ namespace DiGi.GLTF.Analytical
         /// </summary>
         /// <param name="buildingModel">The <see cref="BuildingModel"/> to be converted. This value can be null.</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
-        /// <param name="buildingDisplayMode">The <see cref="BuildingDisplayMode"/> that determines whether components become individual nodes or are merged into a single envelope node per building.</param>
+        /// <param name="buildingModelDetailLevel">The <see cref="BuildingModelDetailLevel"/> that determines whether components become individual nodes or are merged into a single envelope node per building.</param>
         /// <returns>A list of <see cref="GLTFNode"/> instances for all convertible components, or null if the building model is null or has no components.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance, BuildingDisplayMode buildingDisplayMode = BuildingDisplayMode.Component)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = DiGi.Core.Constants.Tolerance.Distance, BuildingModelDetailLevel buildingModelDetailLevel = BuildingModelDetailLevel.Component)
         {
             if (buildingModel is null)
             {
                 return null;
             }
 
-            if (buildingDisplayMode == BuildingDisplayMode.Envelope)
+            if (buildingModelDetailLevel == BuildingModelDetailLevel.Envelope)
             {
                 List<IComponent>? components_Envelope = buildingModel.GetComponents<IComponent>();
                 if (components_Envelope is null || components_Envelope.Count == 0)

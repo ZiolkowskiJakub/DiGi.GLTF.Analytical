@@ -14,34 +14,34 @@ public static class Convert
 Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → Convert
 ### Methods
 
-<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.GLTF.Analytical.Enums.BuildingDisplayMode)'></a>
+<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.Analytical.Building.Enums.BuildingModelDetailLevel)'></a>
 
-## Convert\.ToGLTF\_GLTFNodes\(this BuildingModel, double, BuildingDisplayMode\) Method
+## Convert\.ToGLTF\_GLTFNodes\(this BuildingModel, double, BuildingModelDetailLevel\) Method
 
 Converts all components of the specified [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') \(walls, roofs, floors and other components with surface geometry\) into [DiGi\.GLTF\.Classes\.GLTFNode](https://learn.microsoft.com/en-us/dotnet/api/digi.gltf.classes.gltfnode 'DiGi\.GLTF\.Classes\.GLTFNode') instances\.
 
 ```csharp
-public static System.Collections.Generic.List<DiGi.GLTF.Classes.GLTFNode>? ToGLTF_GLTFNodes(this DiGi.Analytical.Building.Classes.BuildingModel? buildingModel, double tolerance=1E-06, DiGi.GLTF.Analytical.Enums.BuildingDisplayMode buildingDisplayMode=DiGi.GLTF.Analytical.Enums.BuildingDisplayMode.Component);
+public static System.Collections.Generic.List<DiGi.GLTF.Classes.GLTFNode>? ToGLTF_GLTFNodes(this DiGi.Analytical.Building.Classes.BuildingModel? buildingModel, double tolerance=1E-06, DiGi.Analytical.Building.Enums.BuildingModelDetailLevel buildingModelDetailLevel=DiGi.Analytical.Building.Enums.BuildingModelDetailLevel.Component);
 ```
 #### Parameters
 
-<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.GLTF.Analytical.Enums.BuildingDisplayMode).buildingModel'></a>
+<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.Analytical.Building.Enums.BuildingModelDetailLevel).buildingModel'></a>
 
 `buildingModel` [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')
 
 The [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') to be converted\. This value can be null\.
 
-<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.GLTF.Analytical.Enums.BuildingDisplayMode).tolerance'></a>
+<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.Analytical.Building.Enums.BuildingModelDetailLevel).tolerance'></a>
 
 `tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
 The distance tolerance used during triangulation\.
 
-<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.GLTF.Analytical.Enums.BuildingDisplayMode).buildingDisplayMode'></a>
+<a name='DiGi.GLTF.Analytical.Convert.ToGLTF_GLTFNodes(thisDiGi.Analytical.Building.Classes.BuildingModel,double,DiGi.Analytical.Building.Enums.BuildingModelDetailLevel).buildingModelDetailLevel'></a>
 
-`buildingDisplayMode` [BuildingDisplayMode](DiGi.GLTF.Analytical.Enums.md#DiGi.GLTF.Analytical.Enums.BuildingDisplayMode 'DiGi\.GLTF\.Analytical\.Enums\.BuildingDisplayMode')
+`buildingModelDetailLevel` [DiGi\.Analytical\.Building\.Enums\.BuildingModelDetailLevel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.enums.buildingmodeldetaillevel 'DiGi\.Analytical\.Building\.Enums\.BuildingModelDetailLevel')
 
-The [BuildingDisplayMode](DiGi.GLTF.Analytical.Enums.md#DiGi.GLTF.Analytical.Enums.BuildingDisplayMode 'DiGi\.GLTF\.Analytical\.Enums\.BuildingDisplayMode') that determines whether components become individual nodes or are merged into a single envelope node per building\.
+The [DiGi\.Analytical\.Building\.Enums\.BuildingModelDetailLevel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.enums.buildingmodeldetaillevel 'DiGi\.Analytical\.Building\.Enums\.BuildingModelDetailLevel') that determines whether components become individual nodes or are merged into a single envelope node per building\.
 
 #### Returns
 [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.GLTF\.Classes\.GLTFNode](https://learn.microsoft.com/en-us/dotnet/api/digi.gltf.classes.gltfnode 'DiGi\.GLTF\.Classes\.GLTFNode')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
