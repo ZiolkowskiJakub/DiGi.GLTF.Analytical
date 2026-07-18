@@ -9,6 +9,7 @@ using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.Analytical.Building.Enums;
 using DiGi.GLTF.Classes;
 using System.Collections.Generic;
+using DiGi.Core.Classes;
 
 namespace DiGi.GLTF.Analytical
 {
@@ -23,10 +24,11 @@ namespace DiGi.GLTF.Analytical
         /// Converts all components of the specified <see cref="BuildingModel"/> (walls, roofs, floors and other components with surface geometry) into <see cref="GLTFNode"/> instances.
         /// </summary>
         /// <param name="buildingModel">The <see cref="BuildingModel"/> to be converted. This value can be null.</param>
+        /// <param name="reference">The optional root <see cref="IReference"/> of the building model (for example a county + building <see cref="ComplexReference"/>). Node references extend it (component step appended per node) and node names are derived from its last step (see <see cref="Query.Name(IReference?)"/>).</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
         /// <param name="buildingModelDetailLevel">The <see cref="BuildingModelDetailLevel"/> that determines whether components become individual nodes or are merged into a single envelope node per building.</param>
         /// <returns>A list of <see cref="GLTFNode"/> instances for all convertible components, or null if the building model is null or has no components.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, double tolerance = Core.Constants.Tolerance.Distance, BuildingModelDetailLevel buildingModelDetailLevel = BuildingModelDetailLevel.Component)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this BuildingModel? buildingModel, IReference? reference = null,double tolerance = Core.Constants.Tolerance.Distance, BuildingModelDetailLevel buildingModelDetailLevel = BuildingModelDetailLevel.Component)
         {
             if (buildingModel is null)
             {
@@ -50,7 +52,13 @@ namespace DiGi.GLTF.Analytical
                         continue;
                     }
 
-                    List<GLTFNode>? gLTFNodes_Component = ToGLTF_GLTFNodes(component, tolerance);
+                    IReference? reference_Component = null;
+                    if (reference is not null)
+                    {
+                        reference_Component = Core.Create.Reference(reference, Core.Create.UniqueReference(component));
+                    }
+
+                    List<GLTFNode>? gLTFNodes_Component = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
                     if (gLTFNodes_Component is null)
                     {
                         continue;
@@ -83,7 +91,21 @@ namespace DiGi.GLTF.Analytical
                     return null;
                 }
 
-                GLTFNode? gLTFNode = Create.GLTFNode(mesh3D_Envelope, $"BuildingModel {buildingModel.UniqueId}", buildingModel.UniqueId, Query.Color(buildingModel), 1, buildingModel.ToSystem_String(), tolerance);
+                IReference? reference_Envelope = reference ?? Core.Create.UniqueReference(buildingModel);
+
+                string? reference_Temp = reference_Envelope?.ToString();
+                if(string.IsNullOrWhiteSpace(reference_Temp))
+                {
+                    reference_Temp = buildingModel.UniqueId;
+                }
+
+                string? name = Query.Name(reference_Envelope);
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    name = $"BuildingModel {reference_Temp}";
+                }
+
+                GLTFNode? gLTFNode = Create.GLTFNode(mesh3D_Envelope, name, reference_Temp, Query.Color(buildingModel), 1, buildingModel.ToSystem_String(), tolerance);
                 if (gLTFNode is null)
                 {
                     return null;
@@ -101,34 +123,13 @@ namespace DiGi.GLTF.Analytical
             List<GLTFNode> result = [];
             foreach (IComponent component in components)
             {
-                List<GLTFNode>? gLTFNodes = ToGLTF_GLTFNodes(component, tolerance);
-                if (gLTFNodes is not null)
+                IReference? reference_Component = null;
+                if (reference is not null)
                 {
-                    result.AddRange(gLTFNodes);
+                    reference_Component = Core.Create.Reference(reference, Core.Create.UniqueReference(component));
                 }
-            }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the specified <see cref="UrbanModel"/> into <see cref="GLTFNode"/> instances by converting all contained <see cref="BuildingModel"/> instances.
-        /// </summary>
-        /// <param name="urbanModel">The <see cref="UrbanModel"/> to be converted. This value can be null.</param>
-        /// <param name="tolerance">The distance tolerance used during triangulation.</param>
-        /// <returns>A list of <see cref="GLTFNode"/> instances for all contained building models, or null if the urban model is null or empty.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this UrbanModel? urbanModel, double tolerance = Core.Constants.Tolerance.Distance)
-        {
-            List<BuildingModel>? buildingModels = urbanModel?.GetBuildingModels();
-            if (buildingModels is null)
-            {
-                return null;
-            }
-
-            List<GLTFNode> result = [];
-            foreach (BuildingModel buildingModel in buildingModels)
-            {
-                List<GLTFNode>? gLTFNodes = ToGLTF_GLTFNodes(buildingModel, tolerance);
+                List<GLTFNode>? gLTFNodes = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
                 if (gLTFNodes is not null)
                 {
                     result.AddRange(gLTFNodes);
@@ -142,9 +143,10 @@ namespace DiGi.GLTF.Analytical
         /// Converts the specified building <see cref="IComponent"/> (for example a wall, a floor or a roof) into <see cref="GLTFNode"/> instances using its surface representation (see <see cref="DiGi.Analytical.Building.Query.Surface3D(IComponent?)"/>) and default component styling.
         /// </summary>
         /// <param name="component">The building component to be converted. This value can be null.</param>
+        /// <param name="reference">The optional <see cref="IReference"/> identifying the component (for example a county + building + component <see cref="ComplexReference"/>). Its string form becomes the node reference and its last step becomes the node name (see <see cref="Query.Name(IReference?)"/>).</param>
         /// <param name="tolerance">The distance tolerance used during triangulation.</param>
         /// <returns>A list with a single <see cref="GLTFNode"/> representing the component, or null if the component has no supported surface geometry.</returns>
-        public static List<GLTFNode>? ToGLTF_GLTFNodes(this IComponent? component, double tolerance = Core.Constants.Tolerance.Distance)
+        public static List<GLTFNode>? ToGLTF_GLTFNodes(this IComponent? component, IReference? reference = null, double tolerance = Core.Constants.Tolerance.Distance)
         {
             ISurface3D? surface3D = component?.Surface3D();
             if (component is null || surface3D is null)
@@ -156,7 +158,17 @@ namespace DiGi.GLTF.Analytical
 
             string? properties = (component as ISerializableObject)?.ToSystem_String();
 
-            GLTFNode? gLTFNode = Create.GLTFNode(surface3D, component.GetType().Name, Core.Create.UniqueReference(component)?.ToString(), Query.Color(component as ISerializableObject), opacity, properties, tolerance);
+            IReference? reference_Component = reference ?? Core.Create.UniqueReference(component);
+
+            string? reference_Temp = reference_Component?.ToString();
+
+            string? name = Query.Name(reference_Component);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = component.GetType().Name;
+            }
+
+            GLTFNode? gLTFNode = Create.GLTFNode(surface3D, name, reference_Temp, Query.Color(component), opacity, properties, tolerance);
             if (gLTFNode is null)
             {
                 return null;
