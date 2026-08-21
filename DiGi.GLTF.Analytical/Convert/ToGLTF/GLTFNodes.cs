@@ -58,7 +58,16 @@ namespace DiGi.GLTF.Analytical
                         reference_Component = Core.Create.Reference(reference, Core.Create.UniqueReference(component));
                     }
 
-                    List<GLTFNode>? gLTFNodes_Component = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
+                    List<GLTFNode>? gLTFNodes_Component = null;
+                    try
+                    {
+                        gLTFNodes_Component = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
+                    }
+                    catch (System.Exception)
+                    {
+                        gLTFNodes_Component = null;
+                    }
+
                     if (gLTFNodes_Component is null)
                     {
                         continue;
@@ -129,7 +138,16 @@ namespace DiGi.GLTF.Analytical
                     reference_Component = Core.Create.Reference(reference, Core.Create.UniqueReference(component));
                 }
 
-                List<GLTFNode>? gLTFNodes = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
+                List<GLTFNode>? gLTFNodes = null;
+                try
+                {
+                    gLTFNodes = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
+                }
+                catch (System.Exception)
+                {
+                    gLTFNodes = null;
+                }
+
                 if (gLTFNodes is not null)
                 {
                     result.AddRange(gLTFNodes);
