@@ -7,6 +7,8 @@ using DiGi.Core.Interfaces;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.Analytical.Building.Enums;
+using DiGi.Analytical.Classes;
+using DiGi.Geometry.Core.Enums;
 using DiGi.GLTF.Classes;
 using System.Collections.Generic;
 using DiGi.Core.Classes;
@@ -37,55 +39,64 @@ namespace DiGi.GLTF.Analytical
 
             if (buildingModelDetailLevel == BuildingModelDetailLevel.Envelope)
             {
-                List<IComponent>? components_Envelope = buildingModel.GetComponents<IComponent>();
-                if (components_Envelope is null || components_Envelope.Count == 0)
+                // The external shell carries consistently oriented faces and normals (outward for Side.External),
+                // which the per-component triangle collection did not - see DiGi.GLTF#1. A model with no space
+                // relation or fewer than four external faces returns null. A component carrying more than one
+                // geometry throws NotImplementedException in Query.Geometry3D; the model is dropped rather than
+                // the exception propagated, so one such model costs itself and never the scene around it.
+                Shell? shell = null;
+                try
+                {
+                    shell = buildingModel.GetExternalShell(Side.External, Orientation.CounterClockwise, Orientation.Clockwise, tolerance);
+                }
+                catch (System.NotImplementedException)
+                {
+                    shell = null;
+                }
+
+                if (shell is null)
                 {
                     return null;
                 }
 
+                // The shell is a Polyhedron<Face>, not the non-generic Polyhedron, so triangulate its faces directly.
                 List<Triangle3D> triangle3Ds = [];
-                foreach (IComponent component in components_Envelope)
+                List<Face>? faces = shell.PolygonalFaces;
+                if (faces is not null)
                 {
-                    List<ISpace>? spaces = buildingModel.GetSpaces(component);
-                    if(spaces is not null && spaces.Count > 1)
+                    foreach (Face face in faces)
                     {
-                        continue;
-                    }
-
-                    IReference? reference_Component = null;
-                    if (reference is not null)
-                    {
-                        reference_Component = Core.Create.Reference(reference, Core.Create.UniqueReference(component));
-                    }
-
-                    List<GLTFNode>? gLTFNodes_Component = null;
-                    try
-                    {
-                        gLTFNodes_Component = ToGLTF_GLTFNodes(component, reference_Component, tolerance);
-                    }
-                    catch (System.Exception)
-                    {
-                        gLTFNodes_Component = null;
-                    }
-
-                    if (gLTFNodes_Component is null)
-                    {
-                        continue;
-                    }
-
-                    foreach (GLTFNode gLTFNode_Component in gLTFNodes_Component)
-                    {
-                        Mesh3D? mesh3D_Component = gLTFNode_Component.Mesh3D;
-                        if (mesh3D_Component is null)
+                        List<Triangle3D>? triangle3Ds_Face = face.Triangulate(tolerance);
+                        if (triangle3Ds_Face is null)
                         {
                             continue;
                         }
 
-                        List<Triangle3D>? triangle3Ds_Component = mesh3D_Component.GetTriangles();
-                        if (triangle3Ds_Component is not null)
+                        // Wind each triangle to follow the face's outward normal; NTS triangulation does not guarantee it.
+                        Vector3D? faceNormal = face.Plane?.Normal;
+                        if (faceNormal is not null)
                         {
-                            triangle3Ds.AddRange(triangle3Ds_Component);
+                            foreach (Triangle3D triangle3D in triangle3Ds_Face)
+                            {
+                                List<Point3D>? points = triangle3D.GetPoints();
+                                if (points is null || points.Count != 3)
+                                {
+                                    continue;
+                                }
+
+                                Point3D p0 = points[0], p1 = points[1], p2 = points[2];
+                                double nx = (p1.Y - p0.Y) * (p2.Z - p0.Z) - (p1.Z - p0.Z) * (p2.Y - p0.Y);
+                                double ny = (p1.Z - p0.Z) * (p2.X - p0.X) - (p1.X - p0.X) * (p2.Z - p0.Z);
+                                double nz = (p1.X - p0.X) * (p2.Y - p0.Y) - (p1.Y - p0.Y) * (p2.X - p0.X);
+
+                                if (nx * faceNormal.X + ny * faceNormal.Y + nz * faceNormal.Z < 0)
+                                {
+                                    triangle3D.Inverse();
+                                }
+                            }
                         }
+
+                        triangle3Ds.AddRange(triangle3Ds_Face);
                     }
                 }
 
